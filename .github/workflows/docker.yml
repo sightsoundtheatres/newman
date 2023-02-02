@@ -1,0 +1,27 @@
+name: Docker Image CI
+
+on:
+  push:
+    branches:
+      - multi-architecture-docker-images
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+    - name: Docker Setup QEMU
+      uses: docker/setup-qemu-action@v2.1.0
+      with:
+        platforms: linux/amd64,linux/arm64
+    - name: Docker Setup Buildx
+      uses: docker/setup-buildx-action@v2.4.0
+      with:
+        platforms: linux/amd64,linux/arm64
+    - name: Build and push Docker images
+      uses: docker/build-push-action@v4.0.0
+      with:
+        build-args: NEWMAN_VERSION=5.3.2
+        push: true
+        file: docker/images/alpine/Dockerfile
+        tags: ghcr.io/sightsoundtheatres/newman:latest
